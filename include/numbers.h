@@ -1,4 +1,4 @@
-
+#include <stdlib.h>
 // modifies `rs` with
 // `[0] - maximum number in a`
 // `[1] - index in a of size s`
