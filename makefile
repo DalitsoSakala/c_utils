@@ -9,4 +9,9 @@ build: clean sources/numbers.c sources/strings.c include/numbers.h include/strin
 	&& rm *.o
 
 clean:
-	if [ -f *.so ]; then rm *.o *.so 2> /dev/null;echo; fi
+	if [ -f *.so ]; then rm *.o *.out *.so 2> /dev/null;echo; fi
+builde: build examples/numbers.c
+	gcc examples/numbers.c -lc_utils -Iinclude -L. -o a.out
+run: a.out libc_utils.so
+	export LD_LIBRARY_PATH=$$(pwd)
+	  ./a.out 
