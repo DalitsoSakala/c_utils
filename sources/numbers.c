@@ -35,7 +35,7 @@ int mat_mult(double *result, const double *mta, const double *mtb, int ra,
       double mlr = (*mb)[c++][C];
       sum += mlr * mcnd;
     }
-    *rs[r++][C] = sum;
+    (*rs)[r++][C] = sum;
     if (r == ra && C + 1 < cb) {
       C++;
       r = 0;
@@ -51,10 +51,10 @@ void mat_tostr(char *to, const double *arr, size_t rows, size_t cols,
   ptr = (double(*)[rows][cols])arr;
   strcat(to, "{\n");
   for (i = 0; i < rows; i++) {
-    strcat(to, " {");
+    strcat(to, " { ");
     for (int x = 0; x < cols;) {
       char d[digits + 1];
-      snprintf(d, digits, "%lf", *ptr[i][x]);
+      snprintf(d, digits, "%lf", (*ptr)[i][x]);
       strcat(to, d);
       if (++x != cols)
         strcat(to, ", ");

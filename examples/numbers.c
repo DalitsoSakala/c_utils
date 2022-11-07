@@ -5,25 +5,45 @@ int main(void) {
   size_t s;
   long min[2];
   long max[2];
-  const double mata[][2] = {{1, 0}, {0, 1}};
-  const double matb[][2] = {{8, 0}, {9, 4}};
-  double matr[2][2];
-  long int p;
-  char mstr[50];
+  
+  const double mata[][3] = {{1, 0, 0},{0, 1, 0}, {0, 0, 1}};
+  const double matb[][3] = {{8, 0, 3}, {9, 4, 1},{1, 2, 5}};
+  double matr[3][3];
+  char mstra[150];
+  char mstrb[150];
+  char mstrr[150];
+  
+  long int b_search_position;
   long lst[] = {5, 28, 11, 9, 7, 1, 3, 2, 16, 0, 30, 22, 10, 4, 1};
 
+
+  // Sorting a list
   s = sizeof(lst) / sizeof(lst[0]);
   sort(lst, s);
-  min_pos(min, lst, s);
-  max_pos(max, lst, s);
+  printf("\nThe sorted list is:\n");
   for (int i = 0; i < s; i++)
     printf("%ld, ", lst[i]);
-  p = b_search(22, lst, s);
-  printf("\npos of 22: %ld\n", p);
-  printf("Min and Max are %ld at %ld and %ld at %ld\n", *min, min[1], *max,
+    
+    
+  // Binary search
+  b_search_position = b_search(22, lst, s);
+  printf("\n\nPosition of 22 after bunary search is: %ld\n", b_search_position);
+  
+  
+  // Finding min and max in an array
+  min_pos(min, lst, s);
+  max_pos(max, lst, s);
+  printf("\n\nMin and Max are %ld at %ld and %ld at %ld\n", *min, min[1], *max,
          max[1]);
-  mat_mult(&matr, &mata, &matb, 2, 2, 2, 2);
-  mat_tostr(mstr, &matr, 2, 2, 3);
-  printf("%s\n", mstr);
+         
+         
+  // Matrix multiplication
+  mat_mult(&matr, &mata, &matb, 3,3,3,3);
+  
+  mat_tostr(mstra, &mata, 3,3, 4);
+  mat_tostr(mstrb, &matb, 3,3, 4);
+  mat_tostr(mstrr, &matr, 3,3, 4);
+  
+  printf("\nMultiplying matrix %s\nand %s\ngives %s\n",mstra,mstrb,mstrr);
   return (0);
 }
