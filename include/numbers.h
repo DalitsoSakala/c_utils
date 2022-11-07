@@ -22,10 +22,10 @@ void sort(long *a, size_t s);
 // Multiply matrix `a` and `b` returning
 // a pointer to the result to res such that it is
 // 0 if `a` & `b` are not compatible.
-void mat_mult(double *result, const double *a, const double *b, int ra, int ca,
+int mat_mult(double *result, const double *a, const double *b, int ra, int ca,
               int rb, int cb);
 
 // presents multidementional array `from` as a string
 // in initialized string `to`.
 // Returns 1 if successful but 0 if not
-int mat_tostr(char *to, const double *from, size_t r, size_t c, int precision);
+void mat_tostr(char *to, const double *from, size_t r, size_t c, int precision);

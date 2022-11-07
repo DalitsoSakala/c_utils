@@ -1,5 +1,6 @@
 #include "numbers.h"
 #include <stdlib.h>
+#include<string.h>
 
 long b_search(long n, const long *arr, size_t s) {
   unsigned long lo = 0, hi = s - 1, m;
