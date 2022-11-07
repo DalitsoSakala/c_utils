@@ -5,8 +5,8 @@ int main(void) {
   size_t s;
   long min[2];
   long max[2];
-  const double mata[][2]={{1,0},{0,1}};
-  const double matb[][2]={{8,0},{9,4}};
+  const double mata[][2] = {{1, 0}, {0, 1}};
+  const double matb[][2] = {{8, 0}, {9, 4}};
   double matr[2][2];
   long int p;
   char mstr[50];
@@ -22,8 +22,8 @@ int main(void) {
   printf("\npos of 22: %ld\n", p);
   printf("Min and Max are %ld at %ld and %ld at %ld\n", *min, min[1], *max,
          max[1]);
-  mat_mult(&matr,&mata,&matb,2,2,2,2);
-  mat_tostr(mstr,&matr,2,2,3);
-  printf("%s\n",mstr);
+  mat_mult(&matr, &mata, &matb, 2, 2, 2, 2);
+  mat_tostr(mstr, &matr, 2, 2, 3);
+  printf("%s\n", mstr);
   return (0);
 }
