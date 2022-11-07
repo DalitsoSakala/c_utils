@@ -17,4 +17,13 @@ long	b_search(long n, const long *a, size_t s);
 void	swap(long *a, int i, int j);
 
 // Sort `a` of size `s` in ascending order
-void	sort(long *, size_t);
+void	sort(long *a, size_t s);
+
+// Multiply matrix `a` and `b` returning
+// a pointer to the result to res such that it is
+// 0 if `a` & `b` are not compatible.
+void mat_mult(double* result,const double *a,const  double *b,int ra,int ca,int rb,int cb);
+
+// presents multidementional array `from` as a string
+// in initialized string `to`
+void mat_tostr(char* to,const double *from,size_t r,size_t c,int digits);

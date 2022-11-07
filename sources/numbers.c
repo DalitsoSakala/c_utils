@@ -15,6 +15,56 @@ long b_search(long n, const long *arr, size_t s) {
   return -1 - m;
 }
 
+void mat_mult(double *result,const double *mta,const double *mtb,int ra,int ca,int rb,int cb){
+	double (*rs)[ra][cb];
+	double (*ma)[ra][ca]=(double (*)[ra][ca])mta;
+	double (*mb)[rb][cb]=(double (*)[rb][cb])mtb;
+
+	int c=0,r=0,C=0;
+	double sum=0;
+	printf("%lf\n", *mb[0][0]);
+	if(ca!=rb){
+		return;
+	}
+	rs=(double (*)[ra][cb])result;
+	for(;r<ra;){
+	       sum=0;
+	       for(c=0;c<ca;){
+		   double mcnd=(*ma)[r][c];
+		   double mlr=(*mb)[c++][C];
+		   sum+=mlr*mcnd;
+	        }
+	       printf("%lf\n",sum);
+	       *rs[r++][C]=sum;
+	       if(r==ra && C+1<cb){
+		       C++;
+		       r=0;
+		}
+	}
+}
+
+void mat_tostr(char* to,const double *arr,size_t rows,size_t cols,int digits){
+	double (*ptr)[rows][cols];
+	int i=0;
+	int n=rows*cols;
+	ptr=(double(*)[rows][cols])arr;
+	strcat(to,"{\n");
+        for (i = 0; i < rows;i++){
+		strcat(to," {");
+		for(int x=0;x<cols;){
+		  char d[digits+1];
+		  snprintf(d,digits,"%lf",*ptr[i][x]);
+                  strcat(to, d);
+		  if(++x!=cols) 
+		    strcat(to,", ");
+		}
+		strcat(to," }\n");
+	}
+        strcat(to,"}");
+}
+
+
+
 void sort(long *arr, size_t s) {
   long a, *b;
   int i = 1, cascade;
