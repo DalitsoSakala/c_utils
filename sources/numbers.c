@@ -18,16 +18,16 @@ long b_search(long n, const long *arr, size_t s) {
 double lagrange(double x,const double *table,size_t size){
 	double (*tab)[size][2]=(double(*)[size][2])table;
 	int i=0,j;
-	double n,ni,fx,top,bot,tot=0;
+	double *n,*ni,fx,top,bot,tot=0;
 	for(;i<size;){
-	  n=*(*tab)[i];
-	  fx=(*tab)[i++][1];
+	  n=(*tab)[i++];
+	  fx=*(n+1);
 	  top=bot=1;
 	  for(j=0;j<size;){
-	   ni=*(*tab)[j++];
+	   ni=(*tab)[j++];
 	   if(n==ni) continue;
-	   top*=x-ni;
-	   bot*=n-ni;
+	   top*=x-*ni;
+	   bot*=*n-*ni;
 	  }
 	  tot+=(top/bot)*fx;
 	}
