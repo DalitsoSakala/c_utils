@@ -10,8 +10,10 @@ build: clean sources/numbers.c sources/strings.c include/numbers.h include/strin
 
 clean:
 	if [ -f *.so ]; then rm *.o *.out *.so 2> /dev/null;echo; fi
-builde: build examples/numbers.c
+buildn: build examples/numbers.c
 	gcc examples/numbers.c -lc_utils -Iinclude -L. -o a.out
+buildt: build examples/test.c
+	gcc examples/test.c -lc_utils -Iinclude -L. -o a.out
 
 run: export LD_LIBRARY_PATH = $(shell pwd)
 run: a.out libc_utils.so
