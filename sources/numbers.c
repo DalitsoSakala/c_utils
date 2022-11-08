@@ -15,6 +15,24 @@ long b_search(long n, const long *arr, size_t s) {
   }
   return -1 - m;
 }
+double lagrange(double x,const double *table,size_t size){
+	double (*tab)[size][2]=(double(*)[size][2])table;
+	int i=0,j;
+	double n,ni,fx,top,bot,tot=0;
+	for(;i<size;){
+	  n=*(*tab)[i];
+	  fx=(*tab)[i++][1];
+	  top=bot=1;
+	  for(j=0;j<size;){
+	   ni=*(*tab)[j++];
+	   if(n==ni) continue;
+	   top*=x-ni;
+	   bot*=n-ni;
+	  }
+	  tot+=(top/bot)*fx;
+	}
+	return tot;
+}
 
 int mat_mult(double *result, const double *mta, const double *mtb, int ra,
               int ca, int rb, int cb) {

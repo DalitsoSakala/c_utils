@@ -5,6 +5,8 @@ int main(void) {
   size_t s;
   long min[2];
   long max[2];
+
+  double tbl[][2]={{2,5},{3,10},{4,17},{5,26}};
   
   const double mata[][3] = {{1, 0, 0},{0, 1, 0}, {0, 0, 1}};
   const double matb[][3] = {{8, 0, 3}, {9, 4, 1},{1, 2, 5}};
@@ -45,5 +47,9 @@ int main(void) {
   mat_tostr(mstrr, &matr, 3,3, 4);
   
   printf("\nMultiplying matrix %s\nand %s\ngives %s\n",mstra,mstrb,mstrr);
+
+  // lagrange
+  double lg=lagrange(2.5,&tbl,4);
+  printf("\nla grange: (2.5, %lf)\n",lg);
   return (0);
 }

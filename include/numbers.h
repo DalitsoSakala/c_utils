@@ -16,6 +16,8 @@ long b_search(long n, const long *a, size_t s);
 // Swap values `a[i]` and `a[j]`
 void swap(long *a, int i, int j);
 
+
+double lagrange(double x,const double *table,size_t size);
 // Sort `a` of size `s` in ascending order
 void sort(long *a, size_t s);
 
