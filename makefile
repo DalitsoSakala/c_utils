@@ -10,6 +10,7 @@ build: clean sources/numbers.c sources/strings.c include/numbers.h include/strin
 
 clean:
 	if [ -f *.so ]; then rm *.o *.out *.so 2> /dev/null;echo; fi
+mod: clean 
 buildn: build examples/numbers.c
 	gcc examples/numbers.c -lc_utils -Iinclude -L. -o a.out
 buildt: build examples/test.c
