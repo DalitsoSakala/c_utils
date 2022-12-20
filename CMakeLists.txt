@@ -16,6 +16,9 @@ add_library(mod SHARED sources/modular.c)
 
 set_target_properties(mod PROPERTIES SOVERSION 1)
 
+IF(UNIX)
+  target_link_libraries(mod m)
+ENDIF(UNIX)
 
 set_target_properties(mod PROPERTIES PUBLIC_HEADER include/modular.h)
 
@@ -24,7 +27,7 @@ target_include_directories(mod PRIVATE .)
 
 
 # Declare files to install
-# install(TARGETS mylib
-#    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(TARGETS mod
+			LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+			PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 

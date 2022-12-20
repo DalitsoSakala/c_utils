@@ -50,11 +50,11 @@ int encrypt(long *M, const long m, const struct RSACfg* r) {
 
 
 int decrypt(long *m, const long M, const struct RSACfg* r) {
-	long* d = 0;
+	long d = 0;
 	const long *p = &r->p, *q = &r->q, *e = &r->e;
 	if(!valid_rsa(r)) return 1;
-	if(mod_inv(d, *e, (*p - 1)*(*q - 1)))
+	if(mod_inv(&d, *e, (*p - 1)*(*q - 1)))
 		return 2;
-	*m = ((long)pow(M, *d)) % (*p * (*q));
+	*m = ((long)pow(M, d)) % (*p * (*q));
 	return 0;
 }
