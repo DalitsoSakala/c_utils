@@ -54,3 +54,7 @@ dkms.conf
 # Custom
 logs
 build
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+Makefile
