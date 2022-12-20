@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC -shared -Wl,-soname,libmod.so.1 -o libmod.so.1 CMakeFiles/mod.dir/sources/modular.c.o 
