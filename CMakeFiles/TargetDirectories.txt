@@ -1,3 +1,0 @@
-/home/dalitso/pjx/c/c_utils/CMakeFiles/mod.dir
-/home/dalitso/pjx/c/c_utils/CMakeFiles/edit_cache.dir
-/home/dalitso/pjx/c/c_utils/CMakeFiles/rebuild_cache.dir
