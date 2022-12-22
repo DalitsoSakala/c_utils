@@ -8,6 +8,10 @@ struct RSACfg {
 	long q;
 };
 
+// Generates d by iteration
+int make_d(long *d, const struct RSACfg* cfg);
+
+
 // Returns the GCD of the arguments
 long gcd(long, long);
 
@@ -25,6 +29,13 @@ int encrypt(long*, const long, const struct RSACfg*);
 // to the first argument using RSAConfig.
 // Returns error
 int decrypt(long*, const long, const struct RSACfg*);
+
+// Encrypts the second argument assigning result
+// to the first argument using RSAConfig with custom d.
+// Returns error
+int decryptd(long*, const long, const struct RSACfg*, const long);
+
+// Returns 0 when c is invalid 
 
 // Returns 0 when c is invalid 
 // that is (GCD of p, q and e is not 1) or 1 if 
