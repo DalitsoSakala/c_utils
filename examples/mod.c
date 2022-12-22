@@ -29,15 +29,15 @@ int main(int argc, char**argv){
 			  break;
 		case 'q': q=atoi(optarg);
 			  break;
-		case ':': printf("'-%c' option missing a value\n",optopt);
+		case ':': fprintf(stderr,"'-%c' option missing a value\n",optopt);
 			return -1;
-		case '?': printf("Unrecognized option '-%c'\n",optopt);
+		case '?': fprintf(stderr,"Unrecognized option '-%c'\n",optopt);
 			 return 1;
 	}
   }
 
   if(!task) {
-	  printf("Specify a task with -E or -D option\n");
+	  fprintf(stderr,"Specify a task with -E or -D option\n");
 	  return 3;
   }
 
@@ -50,6 +50,7 @@ int main(int argc, char**argv){
 	  cfg.p=p;
 	  cfg.q=q;
   }
+  if(optind<argc){
   if(task==Decrypt) {
 	  M=atoi(argv[optind]);
 	  do_decrypt(&m, M, &cfg);
@@ -60,7 +61,11 @@ int main(int argc, char**argv){
 	  printf("Encryption\nm: %ld\nResult: %ld\n",m,M);
 
   }
-
+  }
+  else {
+	  fprintf(stderr, "error: An argument was expected\n");
+	  return 5;
+  }
 
 
 }
