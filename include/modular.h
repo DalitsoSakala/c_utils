@@ -3,6 +3,7 @@
 
 // RSA Encryption integers
 struct RSACfg {
+	long d;
 	long e;
 	long p;
 	long q;
@@ -30,12 +31,6 @@ int encrypt(long*, const long, const struct RSACfg*);
 // Returns error
 int decrypt(long*, const long, const struct RSACfg*);
 
-// Encrypts the second argument assigning result
-// to the first argument using RSAConfig with custom d.
-// Returns error
-int decryptd(long*, const long, const struct RSACfg*, const long);
-
-// Returns 0 when c is invalid 
 
 // Returns 0 when c is invalid 
 // that is (GCD of p, q and e is not 1) or 1 if 
