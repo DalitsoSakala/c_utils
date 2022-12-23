@@ -66,21 +66,30 @@ int main(int argc, char **argv) {
       M = atoi(argv[optind]);
       if (d)
         cfg.d = d;
-      do_decrypt(&m, M, &cfg);
-      printf("Decryption\nM: %ld\nResult: %ld\n", M, m);
+      if(do_decrypt(&m, M, &cfg)){
+      	fprintf(stderr, "error: Decryption failed (%s:%d)\n" ,__FILE__ , __LINE__);
+      	return 6;
+      }
+      printf("Decryption\nM: %ld\nResult(m): %ld\n", M, m);
     } else if (task == Encrypt) {
       m = atoi(argv[optind]);
-      do_encrypt(&M, m, &cfg);
-      printf("Encryption\nm: %ld\nResult: %ld\n", m, M);
+      if(do_encrypt(&M, m, &cfg)) {
+      	fprintf(stderr, "error: Encryption failed (%s:%d)\n",__FILE__ , __LINE__);
+      	return 7;
+      }
+      printf("Encryption\nm: %ld\nResult(M): %ld\n", m, M);
     }
   } else {
+
     fprintf(stderr, "error: An argument was expected\n");
     return 5;
   }
 }
 
 int do_encrypt(long *M, const long m, const struct RSACfg *c) {
+#ifdef DEBUG
   printf("Encrypting with pub key(%ld,%ld)\n", c->p * c->q, c->e);
+#endif
   return encrypt(M, m, c);
 }
 
@@ -88,6 +97,8 @@ int do_decrypt(long *m, const long M, struct RSACfg *c) {
   if (!c->d)
     make_d(&c->d, c);
 
-  printf("Decrypting with priv key(%ld, %ld, %ld)\n", c->d, c->p, c->q);
+#ifdef DEBUG
+  printf("Decrypting with priv key (%ld, %ld, %ld)\n",  c->d, c->p, c->q);
+#endif
   return decrypt(m, M, c);
 }

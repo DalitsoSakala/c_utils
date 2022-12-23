@@ -16,15 +16,19 @@ int make_d(long *d, const struct RSACfg *cfg) {
     return -1;
   const long p = cfg->p, q = cfg->q, e = cfg->e, n = p * q,
              t = (p - 1) * (q - 1);
-
-  for (long i = 1; i < t; i++)
-    if (i * e % t == 1 && gcd(i, n) == 1) {
+#ifdef DEBUG
+	printf("info: solving '%ld x d = 1 (mod %ld)' using `make_d(long*, const struct RSACfg*)`\n", e, t);
+#endif
+  for (long i = 1; i < t; i++){
+  
+    if ((i * e) % t == 1 && gcd(i, t) == 1) {
       *d = i;
       return 0;
     }
+    }
 #ifdef DEBUG
   fprintf(stderr,
-          "error: %ld could not be used to calculate 'd' with totient %ld", e,
+          "error: %ld could not be used to calculate 'd' with totient %ld\n", e,
           t);
 #endif
   return 1; // not invertible
@@ -60,7 +64,7 @@ int valid_rsa(const struct RSACfg *c) {
       pass_3 = gcd(n, *e) == 1, pass_4 = *e > 0 && *e < (*p * (*q)), pass_5 = 1;
 
   if (c->d)
-    pass_5 = gcd(c->d, n) == 1;
+    pass_5 = gcd(c->d, m) == 1;
 
   return pass_1 & pass_2 & pass_3 & pass_4 & pass_5;
 }
@@ -75,16 +79,21 @@ int encrypt(long *M, const long m, const struct RSACfg *r) {
 int decrypt(long *m, const long M, const struct RSACfg *r) {
   long d = r->d;
   const long *p = &r->p, *q = &r->q, *e = &r->e;
-  if (!valid_rsa(r))
+  if (!valid_rsa(r)){
+#ifdef DEBUG
+      fprintf(stderr, "error: RSACfg is not valid (%s:%d)\n",__FILE__, __LINE__);
+#endif
     return 1;
+   }
   if (!d) {
     if (mod_inv(&d, *e, (*p - 1) * (*q - 1))) {
 #ifdef DEBUG
-      fprintf(stderr, "error: 'd' is not invertible '*m' not assigned");
+      fprintf(stderr, "error: 'd' is not invertible '*m' not assigned\n");
 #endif
       return 2;
     }
   }
   *m = ((long)pow(M, d)) % (*p * (*q));
+
   return 0;
 }
