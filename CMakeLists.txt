@@ -12,7 +12,7 @@ add_library(mod SHARED sources/modular.c)
 
 set_target_properties(mod PROPERTIES SOVERSION 1)
 
-target_compile_definitions(mod PRIVATE DEBUG=1)
+# target_compile_definitions(mod PRIVATE DEBUG=1)
 
 IF(UNIX) 
 	target_link_libraries(mod m) 
