@@ -1,23 +1,29 @@
-#include "modular.h"
+#include "../include/modular.h"
 #include <stdio.h>
 #include <unistd.h>
 
 enum Task { Encrypt = 1, Decrypt } task;
 
-int do_encrypt(long *, const long, const struct RSACfg *);
+int do_encrypt(ulong_t *, const ulong_t, const struct RSACfg *);
 
-int do_decrypt(long *, const long, struct RSACfg *);
+int do_decrypt(ulong_t *, const ulong_t, struct RSACfg *);
 
 int main(int argc, char **argv) {
-  struct RSACfg cfg = {.e = 7, .p = 3, .q = 11, .d = 0};
-  long M, m, e, d, p, q;
+  struct RSACfg cfg = {.e = 61, .p = 29, .q = 113, .d = 0};
+  ulong_t M, m, e, d, p, q;
   int opt;
   opterr = e = p = q = d = 0;
 
-  while ((opt = getopt(argc, argv, ":hDEe:p:q:m:M:")) != -1) {
+  while ((opt = getopt(argc, argv, ":hHDEe:p:q:m:M:")) != -1) {
     switch (opt) {
     case 'h':
-      printf("Usage: %s [-h] [-DE] [-d] [-e x -p y -q z] arg\n", argv[0]);
+      printf("Usage: %s [-hH] [-DE] [-d] [-e x -p y -q z] arg\n", argv[0]);
+      return 0;
+    case 'H':
+      printf(
+          "Default values:\ne=%lld\np=%lld\nq=%lld\n\n\t(Specify your own with options with: -e\
+ evalue -p pvalue -q qvalue)\n",
+          cfg.e, cfg.p, cfg.q);
       return 0;
     case 'D':
       task = Decrypt;
@@ -26,16 +32,16 @@ int main(int argc, char **argv) {
       task = Encrypt;
       break;
     case 'e':
-      e = atoi(optarg);
+      e = atol(optarg);
       break;
     case 'd':
-      d = atoi(optarg);
+      d = atol(optarg);
       break;
     case 'p':
-      p = atoi(optarg);
+      p = atol(optarg);
       break;
     case 'q':
-      q = atoi(optarg);
+      q = atol(optarg);
       break;
     case ':':
       fprintf(stderr, "'-%c' option missing a value\n", optopt);
@@ -63,21 +69,23 @@ int main(int argc, char **argv) {
   }
   if (optind < argc) {
     if (task == Decrypt) {
-      M = atoi(argv[optind]);
+      M = atol(argv[optind]);
       if (d)
         cfg.d = d;
-      if(do_decrypt(&m, M, &cfg)){
-      	fprintf(stderr, "error: Decryption failed (%s:%d)\n" ,__FILE__ , __LINE__);
-      	return 6;
+      if (do_decrypt(&m, M, &cfg)) {
+        fprintf(stderr, "error: Decryption failed (%s:%d)\n", __FILE__,
+                __LINE__);
+        return 6;
       }
-      printf("Decryption\nM: %ld\nResult(m): %ld\n", M, m);
+      printf("Decryption\nM: %lld\nResult(m): %lld\n", M, m);
     } else if (task == Encrypt) {
-      m = atoi(argv[optind]);
-      if(do_encrypt(&M, m, &cfg)) {
-      	fprintf(stderr, "error: Encryption failed (%s:%d)\n",__FILE__ , __LINE__);
-      	return 7;
+      m = atol(argv[optind]);
+      if (do_encrypt(&M, m, &cfg)) {
+        fprintf(stderr, "error: Encryption failed (%s:%d)\n", __FILE__,
+                __LINE__);
+        return 7;
       }
-      printf("Encryption\nm: %ld\nResult(M): %ld\n", m, M);
+      printf("Encryption\nm: %lld\nResult(M): %lld\n", m, M);
     }
   } else {
 
@@ -86,19 +94,19 @@ int main(int argc, char **argv) {
   }
 }
 
-int do_encrypt(long *M, const long m, const struct RSACfg *c) {
+int do_encrypt(ulong_t *M, const ulong_t m, const struct RSACfg *c) {
 #ifdef DEBUG
-  printf("Encrypting with pub key(%ld,%ld)\n", c->p * c->q, c->e);
+  printf("Encrypting with pub key(%lld,%lld)\n", c->p * c->q, c->e);
 #endif
   return encrypt(M, m, c);
 }
 
-int do_decrypt(long *m, const long M, struct RSACfg *c) {
+int do_decrypt(ulong_t *m, const ulong_t M, struct RSACfg *c) {
   if (!c->d)
     make_d(&c->d, c);
 
 #ifdef DEBUG
-  printf("Decrypting with priv key (%ld, %ld, %ld)\n",  c->d, c->p, c->q);
+  printf("Decrypting with priv key (%lld, %lld, %lld)\n", c->d, c->p, c->q);
 #endif
   return decrypt(m, M, c);
 }

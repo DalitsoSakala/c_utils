@@ -1,31 +1,44 @@
 #include "include/modular.h"
 #include <math.h>
-#include <stdlib.h>
 #ifdef DEBUG
 #include <stdio.h>
 #endif
 
-long gcd(long a, long b) {
+ulong_t gcd(ulong_t a, ulong_t b) {
   if (!b)
-    return labs(a);
+    return a;
   return gcd(b, a % b);
 }
 
-int make_d(long *d, const struct RSACfg *cfg) {
+ulong_t mod_pow(ulong_t a, ulong_t exp, ulong_t mod) {
+  ulong_t b = 1 % mod;
+  a = a % mod;
+  while (exp > 0) {
+    if (exp % 2 == 1)
+      b = (a * b) % mod;
+    exp /= 2;
+    a = (a * a) % mod;
+  }
+  return b;
+}
+
+int make_d(ulong_t *d, const struct RSACfg *cfg) {
   if (!valid_rsa(cfg))
     return -1;
-  const long p = cfg->p, q = cfg->q, e = cfg->e, n = p * q,
-             t = (p - 1) * (q - 1);
+  const ulong_t p = cfg->p, q = cfg->q, e = cfg->e, n = p * q,
+              t = (p - 1) * (q - 1);
 #ifdef DEBUG
-	printf("info: solving '%ld x d = 1 (mod %ld)' using `make_d(long*, const struct RSACfg*)`\n", e, t);
+  printf("info: solving '%ld x d = 1 (mod %ld)' using `make_d(long*, const "
+         "struct RSACfg*)`\n",
+         e, t);
 #endif
-  for (long i = 1; i < t; i++){
-  
+  for (ulong_t i = 1; i < t; i++) {
+
     if ((i * e) % t == 1 && gcd(i, t) == 1) {
       *d = i;
       return 0;
     }
-    }
+  }
 #ifdef DEBUG
   fprintf(stderr,
           "error: %ld could not be used to calculate 'd' with totient %ld\n", e,
@@ -34,12 +47,12 @@ int make_d(long *d, const struct RSACfg *cfg) {
   return 1; // not invertible
 }
 
-int mod_inv(long *inv, const long a, const long n) {
-  long t = 0, newt = 1;
-  long r = n, newr = a;
+int mod_inv(ulong_t *inv, const ulong_t a, const ulong_t n) {
+  ulong_t t = 0, newt = 1;
+  ulong_t r = n, newr = a;
 
   while (newr) {
-    long quotient = r / newr, tmp = t;
+    ulong_t quotient = r / newr, tmp = t;
     t = newt;
     newt = tmp - quotient * newt;
     tmp = r;
@@ -58,8 +71,8 @@ int mod_inv(long *inv, const long a, const long n) {
 }
 
 int valid_rsa(const struct RSACfg *c) {
-  const long *e = &c->e, *p = &c->p, *q = &c->q, n = *p * (*q),
-             m = (*p - 1) * (*q - 1);
+  const ulong_t *e = &c->e, *p = &c->p, *q = &c->q, n = *p * (*q),
+              m = (*p - 1) * (*q - 1);
   int pass_1 = gcd(*p, *q) == 1, pass_2 = gcd(m, *e) == 1,
       pass_3 = gcd(n, *e) == 1, pass_4 = *e > 0 && *e < (*p * (*q)), pass_5 = 1;
 
@@ -69,22 +82,22 @@ int valid_rsa(const struct RSACfg *c) {
   return pass_1 & pass_2 & pass_3 & pass_4 & pass_5;
 }
 
-int encrypt(long *M, const long m, const struct RSACfg *r) {
+int encrypt(ulong_t *M, const ulong_t m, const struct RSACfg *r) {
   if (!valid_rsa(r))
     return 1;
-  *M = ((long)pow(m, r->e)) % (r->p * r->q);
+  *M = mod_pow(m, r->e, r->p * r->q);
   return 0;
 }
 
-int decrypt(long *m, const long M, const struct RSACfg *r) {
-  long d = r->d;
-  const long *p = &r->p, *q = &r->q, *e = &r->e;
-  if (!valid_rsa(r)){
+int decrypt(ulong_t *m, const ulong_t M, const struct RSACfg *r) {
+  ulong_t d = r->d;
+  const ulong_t *p = &r->p, *q = &r->q, *e = &r->e;
+  if (!valid_rsa(r)) {
 #ifdef DEBUG
-      fprintf(stderr, "error: RSACfg is not valid (%s:%d)\n",__FILE__, __LINE__);
+    fprintf(stderr, "error: RSACfg is not valid (%s:%d)\n", __FILE__, __LINE__);
 #endif
     return 1;
-   }
+  }
   if (!d) {
     if (mod_inv(&d, *e, (*p - 1) * (*q - 1))) {
 #ifdef DEBUG
@@ -93,7 +106,7 @@ int decrypt(long *m, const long M, const struct RSACfg *r) {
       return 2;
     }
   }
-  *m = ((long)pow(M, d)) % (*p * (*q));
+  *m = mod_pow(M, d, *p * (*q));
 
   return 0;
 }
