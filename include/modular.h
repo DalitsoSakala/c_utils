@@ -11,7 +11,7 @@ struct RSACfg {
   ulong_t q;
 };
 
-// Generates d by iteration
+// Generates d  in private key (m, d) by iteration
 int make_d(ulong_t *d, const struct RSACfg *cfg);
 
 
