@@ -4,13 +4,27 @@
 #include <stdio.h>
 #endif
 
+int is_prime(const ulong_t n) {
+  if (n == 2 || n == 3)
+    return 1;
+  if (n <= 1 || n % 2 == 0 || n % 3 == 0)
+    return 0;
+  for (ulong_t x = 5; x * x < n;) {
+    if (x % n || (x + 2) % n)
+      x += 6;
+    else
+      return 0;
+  }
+  return 1;
+}
+
 ulong_t gcd(ulong_t a, ulong_t b) {
   if (!b)
     return a;
   return gcd(b, a % b);
 }
 
-ulong_t mod_pow(ulong_t a, ulong_t exp, ulong_t mod) {
+ulong_t mod_pow(ulong_t a, ulong_t exp, const ulong_t mod) {
   ulong_t b = 1 % mod;
   a = a % mod;
   while (exp > 0) {
@@ -23,10 +37,11 @@ ulong_t mod_pow(ulong_t a, ulong_t exp, ulong_t mod) {
 }
 
 int make_d(ulong_t *d, const struct RSACfg *cfg) {
-  if (!valid_rsa(cfg))
-    return -1;
+  int code;
+  if (code=valid_rsa(cfg))
+    return code;
   const ulong_t p = cfg->p, q = cfg->q, e = cfg->e, n = p * q,
-              t = (p - 1) * (q - 1);
+                t = (p - 1) * (q - 1);
 #ifdef DEBUG
   printf("info: solving '%ld x d = 1 (mod %ld)' using `make_d(long*, const "
          "struct RSACfg*)`\n",
@@ -36,7 +51,7 @@ int make_d(ulong_t *d, const struct RSACfg *cfg) {
 
     if ((i * e) % t == 1 && gcd(i, t) == 1) {
       *d = i;
-      return 0;
+      return code;
     }
   }
 #ifdef DEBUG
@@ -72,41 +87,60 @@ int mod_inv(ulong_t *inv, const ulong_t a, const ulong_t n) {
 
 int valid_rsa(const struct RSACfg *c) {
   const ulong_t *e = &c->e, *p = &c->p, *q = &c->q, n = *p * (*q),
-              m = (*p - 1) * (*q - 1);
-  int pass_1 = gcd(*p, *q) == 1, pass_2 = gcd(m, *e) == 1,
-      pass_3 = gcd(n, *e) == 1, pass_4 = *e > 0 && *e < (*p * (*q)), pass_5 = 1;
+                t = (*p - 1) * (*q - 1);
+  int pass_p = is_prime(*p), pass_q = is_prime(*q), pass_pq = *p != *q,
+      pass_et = gcd(t, *e) == 1, pass_er = *e > 0 && *e < n, pass_dt = 1,
+      ret = RSA_OK;
 
   if (c->d)
-    pass_5 = gcd(c->d, m) == 1;
+    pass_dt = gcd(c->d, t) == 1;
 
-  return pass_1 & pass_2 & pass_3 & pass_4 & pass_5;
+  if (!pass_p)
+    ret |= RSA_P_PRIME;
+  if (!pass_q)
+    ret |= RSA_Q_PRIME;
+  if (!pass_pq)
+    ret |= RSA_PQ_EQ;
+  if (!pass_et)
+    ret |= RSA_ET_COPRIME;
+  if (!pass_er)
+    ret |= RSA_E_OUT_OF_RANGE;
+  if (!pass_dt)
+    ret |= RSA_DT_COPRIME;
+  return ret;
 }
 
 int encrypt(ulong_t *M, const ulong_t m, const struct RSACfg *r) {
-  if (!valid_rsa(r))
-    return 1;
+  int code;
+  if (code=valid_rsa(r)){
+#ifdef DEBUG
+    fprintf(stderr, "error: RSACfg is not valid, code:%d. (%s:%d)\n", code, __FILE__, __LINE__);
+#endif
+    return code;
+}
   *M = mod_pow(m, r->e, r->p * r->q);
-  return 0;
+  return code; // RSA_OK=0
 }
 
 int decrypt(ulong_t *m, const ulong_t M, const struct RSACfg *r) {
   ulong_t d = r->d;
+  int code;
   const ulong_t *p = &r->p, *q = &r->q, *e = &r->e;
-  if (!valid_rsa(r)) {
+  if (code=valid_rsa(r)) {
 #ifdef DEBUG
-    fprintf(stderr, "error: RSACfg is not valid (%s:%d)\n", __FILE__, __LINE__);
+    fprintf(stderr, "error: RSACfg is not valid, code:%d. (%s:%d)\n", code, __FILE__, __LINE__);
 #endif
-    return 1;
+    return code;
   }
   if (!d) {
     if (mod_inv(&d, *e, (*p - 1) * (*q - 1))) {
 #ifdef DEBUG
-      fprintf(stderr, "error: 'd' is not invertible '*m' not assigned\n");
+      fprintf(stderr, "error: 'e' is not invertible '*m' not assigned\n");
 #endif
-      return 2;
+      return RSA_E_INVERT;
     }
   }
   *m = mod_pow(M, d, *p * (*q));
 
-  return 0;
+  return code; // RSA_OK=0
 }

@@ -48,49 +48,50 @@ int main(int argc, char **argv) {
       return -1;
     case '?':
       fprintf(stderr, "Unrecognized option '-%c'\n", optopt);
-      return 1;
+      return -5;
     }
   }
 
   if (!task) {
     fprintf(stderr, "Specify a task with -E or -D option\n");
-    return 3;
+    return -4;
   }
 
   if ((d && task == Decrypt) || (e || p || q)) {
     if (!(p && q && e)) {
       fprintf(stderr, "error: Make sure you set a complete update on p, q and "
                       "e when you set any of the options (e,p,q)\n");
-      return 4;
+      return -3;
     }
     cfg.e = e;
     cfg.p = p;
     cfg.q = q;
   }
   if (optind < argc) {
+    int code;
     if (task == Decrypt) {
       M = atol(argv[optind]);
       if (d)
         cfg.d = d;
-      if (do_decrypt(&m, M, &cfg)) {
-        fprintf(stderr, "error: Decryption failed (%s:%d)\n", __FILE__,
+      if (code=do_decrypt(&m, M, &cfg)) {
+        fprintf(stderr, "error: Decryption failed, code: %d, (%s:%d)\n", code,__FILE__,
                 __LINE__);
-        return 6;
+        return code;
       }
       printf("Decryption\nM: %lld\nResult(m): %lld\n", M, m);
     } else if (task == Encrypt) {
       m = atol(argv[optind]);
-      if (do_encrypt(&M, m, &cfg)) {
-        fprintf(stderr, "error: Encryption failed (%s:%d)\n", __FILE__,
+      if (code=do_encrypt(&M, m, &cfg)) {
+        fprintf(stderr, "error: Encryption failed, code: %d, (%s:%d)\n",code, __FILE__,
                 __LINE__);
-        return 7;
+        return code;
       }
       printf("Encryption\nm: %lld\nResult(M): %lld\n", m, M);
     }
   } else {
 
     fprintf(stderr, "error: An argument was expected\n");
-    return 5;
+    return -2;
   }
 }
 
@@ -102,8 +103,11 @@ int do_encrypt(ulong_t *M, const ulong_t m, const struct RSACfg *c) {
 }
 
 int do_decrypt(ulong_t *m, const ulong_t M, struct RSACfg *c) {
+  int code;
   if (!c->d)
-    make_d(&c->d, c);
+    if(code=make_d(&c->d, c))
+      return code;
+    
 
 #ifdef DEBUG
   printf("Decrypting with priv key (%lld, %lld, %lld)\n", c->d, c->p, c->q);

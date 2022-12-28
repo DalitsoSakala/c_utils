@@ -2,6 +2,5 @@
     "files.associations": {
         "*.ejs": "html",
         "unistd.h": "c",
-        "numbers": "c"
     }
 }
