@@ -14,7 +14,13 @@ struct RSACfg {
 // Generates d by iteration
 int make_d(ulong_t *d, const struct RSACfg *cfg);
 
+
+// Peform modular exponentiation
 ulong_t mod_pow(ulong_t a, ulong_t exp, ulong_t mod);
+
+// Check if argument is prime.
+// Returns 0 if not prime and 1 otherwise.
+int is_prime(ulong_t);
 
 // Returns the GCD of the arguments
 ulong_t gcd(ulong_t, ulong_t);
